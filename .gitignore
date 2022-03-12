@@ -127,3 +127,14 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+#TErraform
+tf-files/.terraform/
+tf-files/.terraform*
+tf-files/secrets/
+tf-files/terraform.tfstate
+tf-files/terraform.tfstate*
+tf-files/*.pub
+*.pub
+*tmp/
