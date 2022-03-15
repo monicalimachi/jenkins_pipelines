@@ -1,8 +1,0 @@
-.terraform/
-.terraform*
-secrets/
-terraform.tfstate
-terraform.tfstate*
-*.pub
-*tmp/
-path 
