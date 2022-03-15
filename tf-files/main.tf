@@ -58,7 +58,7 @@ resource "aws_route_table_association" "public-subnet-route-table-association" {
 
 
 
-resource "aws_security_group" "web-instance-sg" {
+resource "aws_security_group" "jenkins_sg" {
   name        = local.name
   description = "Allow TLS inbound traffic"
   vpc_id      = aws_vpc.vpc.id
@@ -142,28 +142,10 @@ resource "aws_instance" "ec2_jenkins" {
   instance_type          = "t2.micro"
   availability_zone      = aws_subnet.public-subnet.availability_zone
   subnet_id              = aws_subnet.public-subnet.id
-  vpc_security_group_ids = [aws_security_group.web-instance-sg.id]
+  vpc_security_group_ids = [aws_security_group.jenkins_sg.id]
   #placement_group             = aws_placement_group.web.id
   associate_public_ip_address = true
   key_name                    = aws_key_pair.jenkins.key_name
-  user_data                   = <<EOF
-  #!/bin/sh
-  sudo yum update -y
-  sudo yum install -y nginx  docker
-  wget https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) 
-  sudo mv docker-compose-$(uname -s)-$(uname -m) /usr/local/bin/docker-compose
-  sudo chmod -v +x /usr/local/bin/docker-compose
-  sudo service nginx start && service docker start
-  cd $HOME && mkdir -p $HOME/src/data/jenkins && mkdir -p $HOME/src/jenkins 
-  sudo mv docker-compose.yml $HOME/src/jenkins
-  sudo docker-compose up -d
-  EOF
-
-  provisioner "file" {
-    source      = "docker-compose.yml"
-    destination = "docker-compose.yml"
-  
-
 
   connection {
     type        = "ssh"
@@ -171,8 +153,22 @@ resource "aws_instance" "ec2_jenkins" {
     private_key = file("./secrets/jenkins")
     host        = self.public_dns
     timeout     = "4m"
+  
   }
+
+  provisioner "file" {
+    source      = "tmp/script.sh"
+    destination = "/tmp/script.sh"
+  
   }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo chmod +x /tmp/script.sh",
+      "sudo /tmp/script.sh",
+    ]
+  }
+
 
   #user_data_base64 = base64encode(local.user_data)
 
