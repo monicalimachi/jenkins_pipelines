@@ -1,5 +1,9 @@
 # jenkins_pipelines
 
+ This demo is related to 
+ - An app and a jenkins configuration launched from terraform to EC2 instances and ElasticBeanStalk service.
+ 
+ - A pipeline to launch updates after a change is pushed to source control and deployed to BeanStalk App.
 
 ## Use jenkins file
 - Access console to Jenkins
